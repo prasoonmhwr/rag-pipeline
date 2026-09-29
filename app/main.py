@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from sqlalchemy import text
 from app.db import engine
-from app.routers import ingest
+from app.routers import ingest, query
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -13,3 +13,4 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="RAG Pipeline API", lifespan=lifespan)
 app.include_router(ingest.router, prefix="/api/v1/ingest", tags=["ingest"])
+app.include_router(query.router, prefix="/api/v1/query", tags=["query"])
