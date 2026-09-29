@@ -6,7 +6,7 @@ from app.config import settings
 
 client = genai.Client(api_key=settings.gemini_api_key)
 EMBEDDING_MODEL = "gemini-embedding-2"
-EMBEDDING_DIM = 1536          # must match the vector(1536) column in schema.sql
+EMBEDDING_DIM = 1536          
 MAX_BATCH_SIZE = 100
 
 @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=1, max=30), reraise=True)
