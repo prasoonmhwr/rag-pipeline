@@ -1,0 +1,33 @@
+ACME Corp Employee Handbook
+
+Section 1: Remote Work Policy
+
+Employees may work remotely up to three days per week with manager approval. Fully remote arrangements require written approval from both the direct manager and the department head. Remote employees must be reachable during core hours, which are 10:00 AM to 4:00 PM in their local time zone. Company-issued laptops must be used for all work and must be connected to the corporate VPN when accessing internal systems. Employees working remotely are expected to maintain a safe, private workspace and to attend all scheduled team meetings by video.
+
+Section 2: Paid Time Off
+
+Full-time employees accrue 20 days of paid time off per year, accruing monthly. Unused PTO may be carried over up to a maximum of 5 days into the following calendar year. Any carried-over days not used by March 31 are forfeited. PTO requests of more than five consecutive days must be submitted at least 30 days in advance. Sick leave is tracked separately and does not count against PTO; employees receive 10 paid sick days per year.
+
+Section 3: Parental Leave
+
+Primary caregivers are eligible for 16 weeks of fully paid parental leave. Secondary caregivers are eligible for 6 weeks of fully paid leave. Leave may be taken at any point within the first 12 months following birth or adoption. Employees must notify HR at least 60 days before the intended start of leave whenever possible, and benefits continue unchanged throughout the leave period.
+
+Section 4: Expense Reimbursement
+
+Business expenses must be submitted within 30 days of being incurred, with itemized receipts attached. Meals during business travel are reimbursed up to 75 dollars per day. Flights must be booked at least 14 days in advance through the company travel portal unless a manager grants an exception. Home office equipment purchases over 200 dollars require prior approval from the department head. Reimbursements are processed on the next bi-weekly payroll cycle after approval.
+
+Section 5: Code of Conduct
+
+All employees are expected to treat colleagues, customers, and partners with respect. Harassment, discrimination, and retaliation of any kind are prohibited and will result in disciplinary action up to and including termination. Employees who witness or experience violations should report them to HR or through the anonymous ethics hotline. Confidential company and customer information must never be shared outside the organization without written authorization from the legal department.
+
+Section 6: Health and Wellness Benefits
+
+The company offers medical, dental, and vision coverage beginning on the first day of employment. The company pays 90 percent of the premium for employees and 75 percent for dependents. Employees may enroll in a health savings account with an annual company contribution of 1000 dollars. A monthly wellness stipend of 50 dollars is available for gym memberships, fitness classes, or mental health apps. Confidential counseling is available through the employee assistance program at no cost, for up to eight sessions per issue per year.
+
+Section 7: Professional Development
+
+Each employee receives an annual learning budget of 2000 dollars for courses, books, certifications, and conferences. Requests above this amount require manager approval and a short written justification of how the training supports the employee's role. Employees who leave within twelve months of a reimbursed certification must repay the cost on a pro-rated basis. Internal mentorship pairings are available each quarter, and employees are encouraged to spend up to four hours per month on self-directed learning during working hours.
+
+Section 8: Equipment and Security
+
+All employees receive a company laptop and are responsible for its care. Lost or stolen devices must be reported to the IT security team within 24 hours. Passwords must be at least 14 characters and must be stored only in the approved password manager. Multi-factor authentication is required for all company systems. Personal devices may not be used to store customer data, and USB storage devices are blocked by default on all company hardware.
