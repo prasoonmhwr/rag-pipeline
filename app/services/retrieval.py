@@ -4,7 +4,9 @@ async def hybrid_search(session, tenant_id, query_text, query_embedding, top_k=1
     result = await session.execute(
         text("""
             WITH vector_results AS (
-                SELECT id, RANK() OVER (ORDER BY embedding <=> CAST(:query_embedding AS vector)) AS rank
+                SELECT id,
+                       1 - (embedding <=> CAST(:query_embedding AS vector)) AS similarity,
+                       RANK() OVER (ORDER BY embedding <=> CAST(:query_embedding AS vector)) AS rank
                 FROM chunks WHERE tenant_id = :tenant_id
                 ORDER BY embedding <=> CAST(:query_embedding AS vector) LIMIT 50
             ),
@@ -15,6 +17,7 @@ async def hybrid_search(session, tenant_id, query_text, query_embedding, top_k=1
                 ORDER BY ts_rank_cd(content_tsv, query) DESC LIMIT 50
             )
             SELECT c.id, c.content, c.document_id, d.title,
+                COALESCE(v.similarity, 0.0) AS vector_similarity,
                 COALESCE(1.0 / (:rrf_k + v.rank), 0.0) + COALESCE(1.0 / (:rrf_k + t.rank), 0.0) AS rrf_score
             FROM chunks c
             JOIN documents d ON d.id = c.document_id
