@@ -151,4 +151,4 @@ I'd rather list what's genuinely not done than overstate the project — happy t
 
 ## Further Reading
 
-A full written guide covering every design decision in depth — chunking strategy, index tuning, hybrid search internals, citation verification, RLS, and scaling considerations — is included alongside this project.
+A full written [guide]("./docs/rag-pipeline-guide.md") covering every design decision in depth — chunking strategy, index tuning, hybrid search internals, citation verification, RLS, and scaling considerations — is included alongside this project.
