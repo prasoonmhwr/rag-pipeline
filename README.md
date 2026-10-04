@@ -1,6 +1,6 @@
 # Production-Grade RAG Pipeline
 
-A retrieval-augmented generation system built from the ground up on **Postgres + pgvector**, **FastAPI**, and **Gemini** — with the parts most RAG tutorials skip: grounded answers that cite their sources and can admit when they don't know something, row-level access control enforced at the database layer, and async ingestion that never blocks a user-facing request.
+A retrieval-augmented generation system built from the ground up on **Postgres + pgvector**, **FastAPI**, and **Gemini** — with grounded answers that cite their sources and can admit when they don't know something, row-level access control enforced at the database layer, and async ingestion that never blocks a user-facing request.
 
 This isn't a wrapper around a vector-search demo. It's a system designed the way you'd actually need to run it for real users, with real data, and more than one tenant.
 
