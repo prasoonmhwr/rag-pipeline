@@ -19,25 +19,96 @@ Most RAG tutorials stop at "retrieve some chunks, paste them into a prompt." Tha
 
 ## Architecture
 
+
 ```mermaid
 flowchart TD
-    Client["Client"] --> FastAPI["FastAPI"]
-    FastAPI --> IngestRoute["/api/v1/ingest"]
-    FastAPI --> QueryRoute["/api/v1/query"]
+    Client["Client App<br/><i>curl / frontend / bot</i>"]
 
-    IngestRoute -->|enqueue| Queue["Celery + Redis Queue"]
-    Queue --> Worker["Celery Worker"]
-    Worker --> Chunker["Chunker (tiktoken)"]
-    Chunker --> Embedder["Embedder (Gemini)"]
-    Embedder --> DB[("Postgres + pgvector + RLS")]
+    subgraph API["API Layer"]
+        FastAPI["FastAPI<br/><i>uvicorn</i>"]
+        IngestRoute["/api/v1/ingest<br/><i>FastAPI router</i>"]
+        QueryRoute["/api/v1/query<br/><i>FastAPI router</i>"]
+        RateLimit["Rate Limiter<br/><i>redis-py</i>"]
+    end
 
-    QueryRoute --> Retriever["Hybrid Search (vector + full-text, RRF fusion)"]
-    Retriever --> DB
-    Retriever --> Generator["Grounded Generator (Gemini, structured output)"]
-    Generator --> Verifier["Citation Verifier (deterministic, no extra LLM call)"]
-    Verifier --> QueryRoute
+    subgraph Services["Service Layer"]
+        Chunker["Chunker<br/><i>tiktoken</i>"]
+        Embedder["Embedding Service<br/><i>google-genai SDK + tenacity retries</i>"]
+        Cache["Embedding Cache<br/><i>redis</i>"]
+        Retriever["Hybrid Retriever<br/><i>SQLAlchemy async + asyncpg</i>"]
+        Reranker["Cross-Encoder Reranker<br/><i>sentence-transformers (planned)</i>"]
+        Generator["Grounded Generator<br/><i>google-genai SDK (structured output)</i>"]
+        Verifier["Citation Verifier<br/><i>pure Python, no extra LLM call</i>"]
+    end
 
-    Beat["Celery Beat (scheduler)"] --> Queue
+    subgraph Async["Background / Async Layer"]
+        Queue["Job Queue<br/><i>Celery (Redis-backed)</i>"]
+        Worker["Ingestion Worker Pool<br/><i>celery worker</i>"]
+        Syncer["Scheduled Re-sync Job<br/><i>celery beat (placeholder task)</i>"]
+        SourceConn["Source Connectors<br/><i>Confluence / S3 / CMS clients — not yet built</i>"]
+    end
+
+    subgraph Data["Data Layer"]
+        PgBouncer["PgBouncer<br/><i>connection pooling — planned</i>"]
+        Primary[("Postgres Primary<br/><i>pgvector + RLS</i>")]
+        Replica[("Postgres Read Replica<br/><i>pgvector — planned</i>")]
+        Redis[("Redis<br/><i>cache / rate limit / queue broker</i>")]
+    end
+
+    subgraph External["External Services"]
+        EmbedAPI["Embedding API<br/><i>Gemini gemini-embedding-2</i>"]
+        LLM["LLM API<br/><i>Gemini gemini-3.8-flash</i>"]
+    end
+
+    subgraph Ops["Cross-Cutting: Ops & Quality"]
+        EvalCI["Retrieval Eval Suite<br/><i>pytest, Recall@k / MRR — planned</i>"]
+        Feedback[("query_feedback table<br/><i>Postgres — planned</i>")]
+        Logging["Structured Logging<br/><i>python logging</i>"]
+    end
+
+    Client -->|"POST /ingest"| IngestRoute
+    Client -->|"POST /query"| QueryRoute
+
+    IngestRoute --> RateLimit
+    QueryRoute --> RateLimit
+    RateLimit --> Redis
+
+    IngestRoute -->|"enqueue job"| Queue
+    Queue --> Redis
+    Worker -->|"pull job"| Queue
+    Worker --> Chunker
+    Chunker --> Embedder
+    Embedder -->|"batched calls"| EmbedAPI
+    Worker -->|"bulk insert chunks + vectors"| PgBouncer
+
+    Syncer --> SourceConn
+    SourceConn -->|"content hash diff"| Worker
+
+    QueryRoute --> Cache
+    Cache --> Redis
+    Cache -->|"cache miss"| Embedder
+    QueryRoute --> Retriever
+    Retriever -->|"vector <=> + tsvector, RLS-scoped"| PgBouncer
+    Retriever --> Reranker
+    Reranker --> Generator
+    Generator -->|"structured JSON w/ citations"| LLM
+    Generator --> Verifier
+    Verifier -->|"abstain if unverified"| QueryRoute
+    QueryRoute -->|"grounded answer + citations"| Client
+
+    PgBouncer --> Primary
+    PgBouncer -.->|"read-only queries"| Replica
+    Primary -.->|"replication"| Replica
+
+    QueryRoute -.->|"log clicks / thumbs"| Feedback
+    Feedback --> EvalCI
+    EvalCI -.->|"regression gate in CI"| Retriever
+
+    FastAPI --- IngestRoute
+    FastAPI --- QueryRoute
+    QueryRoute -.-> Logging
+    IngestRoute -.-> Logging
+```
 ```
 
 Two independent pipelines sharing one database: **ingestion** is throughput-oriented and runs in the background; **query** is latency-oriented and runs synchronously behind the API. They're tuned differently on purpose.
